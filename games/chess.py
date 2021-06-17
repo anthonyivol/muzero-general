@@ -142,7 +142,7 @@ class Game(AbstractGame):
             The new observation, the reward and a boolean if the game has ended.
         """
         observation, reward, done, _ = self.env.step(action)
-        return numpy.array([[observation]]), reward, done
+        return numpy.transpose(observation, [2,0,1]), reward, done
 
     def legal_actions(self):
         """
@@ -163,7 +163,7 @@ class Game(AbstractGame):
         Returns:
             Initial observation of the game.
         """
-        return numpy.array([[self.env.reset()]])
+        return numpy.transpose(self.env.reset(), [2,0,1])
 
     def close(self):
         """
