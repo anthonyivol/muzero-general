@@ -170,10 +170,11 @@ class SelfPlay:
                         opponent, stacked_observations
                     )
 
+                action_str = self.game.action_to_string(action)
                 observation, reward, done = self.game.step(action)
 
                 if render:
-                    print(f"Played action: {self.game.action_to_string(action)}")
+                    print(f"Played action: {action_str}")
                     self.game.render()
 
                 game_history.store_search_statistics(root, self.config.action_space)

@@ -26,7 +26,7 @@ class MuZeroConfig:
 
         # Evaluate
         self.muzero_player = 0  # Turn Muzero begins to play (0: MuZero plays first, 1: MuZero plays second)
-        self.opponent = None  # Hard coded agent that MuZero faces to assess his progress in multiplayer games. It doesn't influence training. None, "random" or "expert" if implemented in the Game class
+        self.opponent = "self"  # Hard coded agent that MuZero faces to assess his progress in multiplayer games. It doesn't influence training. None, "random" or "expert" if implemented in the Game class
 
 
         ### Self-Play
@@ -182,7 +182,7 @@ class Game(AbstractGame):
         Display the game observation.
         """
         self.env.render()
-    
+
     def human_to_action(self):
         """
         For multiplayer games, ask the user for a legal action
