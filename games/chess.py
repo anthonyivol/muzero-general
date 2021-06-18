@@ -3,6 +3,7 @@ import os
 
 import gym
 import gym_chess
+import chess 
 
 import numpy
 import torch
