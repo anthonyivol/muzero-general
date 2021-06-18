@@ -136,6 +136,9 @@ class Game(AbstractGame):
         if seed is not None:
             self.env.seed(seed)
 
+    def to_play(self):
+      return 0 if self.env.board.turn == chess.WHITE else 1
+
     def step(self, action):
         """
         Apply action to the game.
