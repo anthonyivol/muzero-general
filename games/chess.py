@@ -181,6 +181,24 @@ class Game(AbstractGame):
         self.env.render()
         input("Press enter to take a step ")
 
+    def human_to_action(self):
+        """
+        For multiplayer games, ask the user for a legal action
+        and return the corresponding action number.
+
+        Returns:
+            An integer from the action space.
+        """
+        def input_to_int(message):
+          move = input(message)
+          return self.env.encode(chess.Move.from_uci(move))
+        
+        choice = input_to_int(f"Enter the coordinate for the player {self.to_play()} ex e2e4 : ")
+        while choice not in self.legal_actions() :
+            choice = input(f"Illegal move, Enter the coordinate for the player {self.to_play()} ex e2e4 : ")
+
+        return choice
+        
     def action_to_string(self, action_number):
         """
         Convert an action number to a string representing the action.
