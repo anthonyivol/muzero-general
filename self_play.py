@@ -47,7 +47,7 @@ class SelfPlay:
                         )
                     ),
                     self.config.temperature_threshold,
-                    False,
+                    True,
                     "self",
                     0,
                 )
