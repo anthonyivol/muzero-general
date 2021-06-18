@@ -657,9 +657,11 @@ if __name__ == "__main__":
                 done = False
                 while not done:
                     action = env.human_to_action()
+                    action_str = env.action_to_string(action)
                     observation, reward, done = env.step(action)
-                    print(f"\nAction: {env.action_to_string(action)}\nReward: {reward}")
+                    print(f"\nAction: {action_str}\nReward: {reward}")
                     env.render()
+                    
             elif choice == 6:
                 # Define here the parameters to tune
                 # Parametrization documentation: https://facebookresearch.github.io/nevergrad/parametrization.html
