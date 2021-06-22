@@ -195,5 +195,5 @@ class Game(AbstractGame):
         Display the game observation.
         """
         self.env.render()
-        input("Press enter to take a step ")
+        # input("Press enter to take a step ")
 
