@@ -3,6 +3,7 @@ torch
 tensorboard
 gym
 requests
+chess
 ray
 seaborn
 nevergrad
