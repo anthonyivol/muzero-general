@@ -1,5 +1,6 @@
 import datetime
 import os
+import requests
 
 import gym
 import gym_chess
@@ -26,7 +27,7 @@ class MuZeroConfig:
 
         # Evaluate
         self.muzero_player = 0  # Turn Muzero begins to play (0: MuZero plays first, 1: MuZero plays second)
-        self.opponent = "self"  # Hard coded agent that MuZero faces to assess his progress in multiplayer games. It doesn't influence training. None, "random" or "expert" if implemented in the Game class
+        self.opponent = "expert"  # Hard coded agent that MuZero faces to assess his progress in multiplayer games. It doesn't influence training. None, "random" or "expert" if implemented in the Game class
 
 
         ### Self-Play
@@ -201,7 +202,14 @@ class Game(AbstractGame):
             choice = input(f"Illegal move, Enter the coordinate for the player {self.to_play()} ex e2e4 : ")
 
         return choice
-        
+    
+    def expert_agent(self):
+        api_url = os.getenv('STOCKFISH_URL')
+        depth = 24
+        r = requests.get(f"{api_url}/{depth}/{self.env.board.fen()}")
+        move = r.text
+        return self.env.encode(chess.Move.from_uci(move))
+    
     def action_to_string(self, action_number):
         """
         Convert an action number to a string representing the action.

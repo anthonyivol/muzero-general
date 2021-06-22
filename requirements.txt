@@ -2,7 +2,7 @@ numpy
 torch
 tensorboard
 gym
-gym_chess
+requests
 ray
 seaborn
 nevergrad
