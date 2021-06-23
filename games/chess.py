@@ -5,12 +5,12 @@ import requests
 import gym
 import gym_chess
 import chess 
+import chess.engine
 
 import numpy
 import torch
 
 from .abstract_game import AbstractGame
-
 
 class MuZeroConfig:
     def __init__(self):
@@ -108,8 +108,8 @@ class MuZeroConfig:
 
 
         ### Adjust the self play / training ratio to avoid over/underfitting
-        self.self_play_delay = 1  # Number of seconds to wait after each played game
-        self.training_delay = 1  # Number of seconds to wait after each training step
+        self.self_play_delay = 0  # Number of seconds to wait after each played game
+        self.training_delay = 0  # Number of seconds to wait after each training step
         self.ratio = None  # Desired training steps per self played step ratio. Equivalent to a synchronous version, training can take much longer. Set it to None to disable it
 
 
@@ -121,7 +121,7 @@ class MuZeroConfig:
         Returns:
             Positive float.
         """
-        return 1.0
+        return 1
         
 
 class Game(AbstractGame):
@@ -131,6 +131,7 @@ class Game(AbstractGame):
 
     def __init__(self, seed=None):
         self.env = gym.make("ChessAlphaZero-v0")
+        self.engine = chess.engine.SimpleEngine.popen_uci(os.getenv('STOCKFISH_PATH'))
         if seed is not None:
             self.env.seed(seed)
 
@@ -201,11 +202,8 @@ class Game(AbstractGame):
         return choice
     
     def expert_agent(self):
-        api_url = os.getenv('STOCKFISH_URL')
-        depth = 24
-        r = requests.get(f"{api_url}/{depth}/{self.env.board.fen()}")
-        move = r.text
-        return self.env.encode(chess.Move.from_uci(move))
+        result = self.engine.play(self.env.board, chess.engine.Limit(depth=24))
+        return self.env.encode(chess.Move.from_uci(str(result.move)))
     
     def action_to_string(self, action_number):
         """
