@@ -23,7 +23,7 @@ class MuZeroConfig:
         self.observation_shape = (119, 8, 8)  # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
         self.action_space = list(range(4672))  # Fixed list of all possible actions. You should only edit the length
         self.players = list(range(2))  # List of players. You should only edit the length
-        self.stacked_observations = 32  # Number of previous observations and previous actions to add to the current observation
+        self.stacked_observations = 10  # Number of previous observations and previous actions to add to the current observation
 
         # Evaluate
         self.muzero_player = 0  # Turn Muzero begins to play (0: MuZero plays first, 1: MuZero plays second)
@@ -33,36 +33,34 @@ class MuZeroConfig:
         ### Self-Play
         self.num_workers = 1  # Number of simultaneous threads/workers self-playing to feed the replay buffer
         self.selfplay_on_gpu = True
-        # no GM games has more than 255 moves
-        self.max_moves = 90  # Maximum number of moves if game is not finished before
-        self.num_simulations = 20  # Number of future moves self-simulated
+        # Average chess games moves is ~40, so 40 * 2 (white + black move) * 2
+        self.max_moves = 160  # Maximum number of moves if game is not finished before
+        self.num_simulations = 24  # Number of future moves self-simulated
         self.discount = 1  # Chronological discount of the reward
         self.temperature_threshold = 30  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
 
         # Root prior exploration noise
-        self.root_dirichlet_alpha = 0.25
+        self.root_dirichlet_alpha = 0.3
         self.root_exploration_fraction = 0.25
 
         # UCB formula
         self.pb_c_base = 19652
         self.pb_c_init = 1.25
 
-
-
         ### Network
         self.network = "resnet"  # "resnet" / "fullyconnected"
-        self.support_size = 100  # Value and reward are scaled (with almost sqrt) and encoded on a vector with a range of -support_size to support_size. Choose it so that support_size <= sqrt(max(abs(discounted reward)))
+        self.support_size = 10  # Value and reward are scaled (with almost sqrt) and encoded on a vector with a range of -support_size to support_size. Choose it so that support_size <= sqrt(max(abs(discounted reward)))
         
         # Residual Network
-        self.downsample = "resnet"  # Downsample observations before representation network, False / "CNN" (lighter) / "resnet" (See paper appendix Network Architecture)
+        self.downsample = False  # Downsample observations before representation network, False / "CNN" (lighter) / "resnet" (See paper appendix Network Architecture)
         self.blocks = 16  # Number of blocks in the ResNet
-        self.channels = 128  # Number of channels in the ResNet
-        self.reduced_channels_reward = 128  # Number of channels in reward head
-        self.reduced_channels_value = 128  # Number of channels in value head
-        self.reduced_channels_policy = 128  # Number of channels in policy head
-        self.resnet_fc_reward_layers = [128, 128]  # Define the hidden layers in the reward head of the dynamic network
-        self.resnet_fc_value_layers = [128, 128]  # Define the hidden layers in the value head of the prediction network
-        self.resnet_fc_policy_layers = [128, 128]  # Define the hidden layers in the policy head of the prediction network
+        self.channels = 64  # Number of channels in the ResNet
+        self.reduced_channels_reward = 2  # Number of channels in reward head
+        self.reduced_channels_value = 16  # Number of channels in value head
+        self.reduced_channels_policy = 16  # Number of channels in policy head
+        self.resnet_fc_reward_layers = [128]  # Define the hidden layers in the reward head of the dynamic network
+        self.resnet_fc_value_layers = [128]  # Define the hidden layers in the value head of the prediction network
+        self.resnet_fc_policy_layers = [128]  # Define the hidden layers in the policy head of the prediction network
         
         # Fully Connected Network
         self.encoding_size = 10
@@ -78,9 +76,9 @@ class MuZeroConfig:
         result_default_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results")
         self.results_path = os.path.join(os.getenv('RESULTS_PATH', result_default_path), os.path.basename(__file__)[:-3], datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))  # Path to store the model weights and TensorBoard logs
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
-        self.training_steps = int(1000e3)  # Total number of training steps (ie weights update according to a batch)
-        self.batch_size = 256  # Number of parts of games to train on at each training step
-        self.checkpoint_interval = 1  # Number of training steps before using the model for self-playing
+        self.training_steps = 1000  # Total number of training steps (ie weights update according to a batch)
+        self.batch_size = 512  # Number of parts of games to train on at each training step
+        self.checkpoint_interval = 2  # Number of training steps before using the model for self-playing
         self.value_loss_weight = 0.25  # Scale the value loss to avoid overfitting of the value function, paper recommends 0.25 (See paper appendix Reanalyze)
         self.train_on_gpu = torch.cuda.is_available()  # Train on GPU if available
 
@@ -89,16 +87,16 @@ class MuZeroConfig:
         self.momentum = 0.9  # Used only if optimizer is SGD
 
         # Exponential learning rate schedule
-        self.lr_init = 0.005  # Initial learning rate
+        self.lr_init = 0.003  # Initial learning rate
         self.lr_decay_rate = 1  # Set it to 1 to use a constant learning rate
-        self.lr_decay_steps = 350e3
+        self.lr_decay_steps = 10000
 
 
 
         ### Replay Buffer
-        self.replay_buffer_size = int(1e3)  # Number of self-play games to keep in the replay buffer
-        self.num_unroll_steps = 90  # Number of game moves to keep for every batch element
-        self.td_steps = 90  # Number of steps in the future to take into account for calculating the target value
+        self.replay_buffer_size = int(1e6)  # Number of self-play games to keep in the replay buffer
+        self.num_unroll_steps = 160  # Number of game moves to keep for every batch element
+        self.td_steps = 160  # Number of steps in the future to take into account for calculating the target value
         self.PER = True  # Prioritized Replay (See paper appendix Training), select in priority the elements in the replay buffer which are unexpected for the network
         self.PER_alpha = 1  # How much prioritization is used, 0 corresponding to the uniform case, paper suggests 1
 
@@ -109,8 +107,8 @@ class MuZeroConfig:
 
 
         ### Adjust the self play / training ratio to avoid over/underfitting
-        self.self_play_delay = 30  # Number of seconds to wait after each played game
-        self.training_delay = 5  # Number of seconds to wait after each training step
+        self.self_play_delay = 0  # Number of seconds to wait after each played game
+        self.training_delay = 0  # Number of seconds to wait after each training step
         self.ratio = None  # Desired training steps per self played step ratio. Equivalent to a synchronous version, training can take much longer. Set it to None to disable it
 
 
