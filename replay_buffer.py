@@ -66,7 +66,7 @@ class ReplayBuffer:
             shared_storage.set_info.remote("num_played_steps", self.num_played_steps)
 
         # Save a copy of the buffer to resume an interupted training
-        if self.config.backup_buffer and self.num_played_games % self.backup_buffer_interval == 0 :
+        if self.config.backup_buffer and self.num_played_games % self.config.backup_buffer_interval == 0 :
             pickle.dump(
                 {
                     "buffer": self.buffer,
