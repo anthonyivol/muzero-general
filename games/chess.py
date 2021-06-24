@@ -109,9 +109,9 @@ class MuZeroConfig:
 
 
         ### Adjust the self play / training ratio to avoid over/underfitting
-        self.self_play_delay = 0  # Number of seconds to wait after each played game
-        self.training_delay = 0  # Number of seconds to wait after each training step
-        self.ratio = None  # Desired training steps per self played step ratio. Equivalent to a synchronous version, training can take much longer. Set it to None to disable it
+        self.self_play_delay = 5  # Number of seconds to wait after each played game
+        self.training_delay = 1  # Number of seconds to wait after each training step
+        self.ratio = 0.2  # Desired training steps per self played step ratio. Equivalent to a synchronous version, training can take much longer. Set it to None to disable it
 
 
     def visit_softmax_temperature_fn(self, trained_steps):
