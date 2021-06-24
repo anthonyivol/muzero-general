@@ -32,7 +32,7 @@ class MuZeroConfig:
 
         ### Self-Play
         self.num_workers = 1  # Number of simultaneous threads/workers self-playing to feed the replay buffer
-        self.selfplay_on_gpu = True
+        self.selfplay_on_gpu = False
         # Average chess games moves is ~40, so 40 * 2 (white + black move) * 2
         self.max_moves = 160  # Maximum number of moves if game is not finished before
         self.num_simulations = 24  # Number of future moves self-simulated
@@ -78,7 +78,7 @@ class MuZeroConfig:
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 1000  # Total number of training steps (ie weights update according to a batch)
         self.batch_size = 512  # Number of parts of games to train on at each training step
-        self.checkpoint_interval = 2  # Number of training steps before using the model for self-playing
+        self.checkpoint_interval = 10  # Number of training steps before using the model for self-playing
         self.value_loss_weight = 0.25  # Scale the value loss to avoid overfitting of the value function, paper recommends 0.25 (See paper appendix Reanalyze)
         self.train_on_gpu = torch.cuda.is_available()  # Train on GPU if available
 
@@ -95,7 +95,7 @@ class MuZeroConfig:
 
         ### Replay Buffer
         self.backup_buffer = True
-        self.backup_buffer_interval = 1
+        self.backup_buffer_interval = 10
         self.replay_buffer_size = int(1e6)  # Number of self-play games to keep in the replay buffer
         self.num_unroll_steps = 160  # Number of game moves to keep for every batch element
         self.td_steps = 160  # Number of steps in the future to take into account for calculating the target value
@@ -104,13 +104,11 @@ class MuZeroConfig:
 
         # Reanalyze (See paper appendix Reanalyse)
         self.use_last_model_value = True  # Use the last model to provide a fresher, stable n-step value (See paper appendix Reanalyze)
-        self.reanalyse_on_gpu = True
-
-
+        self.reanalyse_on_gpu = False
 
         ### Adjust the self play / training ratio to avoid over/underfitting
-        self.self_play_delay = 5  # Number of seconds to wait after each played game
-        self.training_delay = 1  # Number of seconds to wait after each training step
+        self.self_play_delay = 10  # Number of seconds to wait after each played game
+        self.training_delay = 2  # Number of seconds to wait after each training step
         self.ratio = 0.2  # Desired training steps per self played step ratio. Equivalent to a synchronous version, training can take much longer. Set it to None to disable it
 
 
