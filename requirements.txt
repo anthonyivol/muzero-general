@@ -7,4 +7,3 @@ chess
 ray
 seaborn
 nevergrad
-sqlite3
