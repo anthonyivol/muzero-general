@@ -1,6 +1,7 @@
 import copy
 import time
-
+import pickle
+import os
 import numpy
 import ray
 import torch
@@ -63,6 +64,18 @@ class ReplayBuffer:
         if shared_storage:
             shared_storage.set_info.remote("num_played_games", self.num_played_games)
             shared_storage.set_info.remote("num_played_steps", self.num_played_steps)
+
+        # Save a copy of the buffer to resume an interupted training
+        if self.config.backup_buffer and self.num_played_games % self.backup_buffer_interval == 0 :
+            pickle.dump(
+                {
+                    "buffer": self.buffer,
+                    "num_played_games": self.num_played_games,
+                    "num_played_steps": self.num_played_steps,
+                    "num_reanalysed_games": shared_storage.get_info.remote("num_reanalysed_games"),
+                },
+                open(os.path.join(self.config.results_path, "replay_buffer.bck.pkl"), "wb"),
+            )
 
     def get_buffer(self):
         return self.buffer

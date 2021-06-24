@@ -94,6 +94,8 @@ class MuZeroConfig:
 
 
         ### Replay Buffer
+        self.backup_buffer = True
+        self.backup_buffer_interval = 1
         self.replay_buffer_size = int(1e6)  # Number of self-play games to keep in the replay buffer
         self.num_unroll_steps = 160  # Number of game moves to keep for every batch element
         self.td_steps = 160  # Number of steps in the future to take into account for calculating the target value
